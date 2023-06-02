@@ -1,0 +1,41 @@
+.small-logo {
+    width: 75px;
+    height: auto;
+}
+
+body{
+    background-color: darkgray;
+}
+.form-label {
+    font-weight: bold;
+}
+
+.boutonsForm {
+    display: flex;
+    margin-left: 975px;
+}
+.boutonsForm > :not(:last-child) {
+    margin-right: 10px;
+}
+
+#tableauSortie{
+    width: available;
+    margin-left: 100px;
+}
+
+.test{
+    margin-left: 20px;
+    margin-top: 40px;
+}
+
+.participant-label {
+    display: inline-block;
+    width: 150px;
+    font-weight: bold;
+}
+
+.sortie-label {
+    display: inline-block;
+    width: 200px;
+    font-weight: bold;
+}

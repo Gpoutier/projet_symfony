@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier sortie{% endblock %}
+
+{% block body %}
+
+    {{ form_start(formSortie) }}
+    <div class="container mt-4">
+        <h1>Modifier une sortie</h1>
+        <div class="row">
+            <div class="col-md-6">
+                {{ form_row(formSortie.nom) }}
+                {{ form_row(formSortie.dateHeureDebut) }}
+                {{ form_row(formSortie.dateLimiteInscription) }}
+                {{ form_row(formSortie.nbInscriptionsMax) }}
+                {{ form_row(formSortie.duree) }}
+                {{ form_row(formSortie.infosSortie) }}
+            </div>
+            <div class="col-md-6 position-relative">
+                <div class="form-group">
+                    <label for="campus" class="form-label">Campus :</label>
+                    <input type="text" id="campus" class="form-control" value="{{ participant.campus.nom }}" disabled>
+                </div>
+                {{ form_row(formSortie.ville) }}
+                {{ form_row(formSortie.lieu) }}
+            </div>
+        </div>
+    </div>
+    <div class="boutonsForm">
+        {{ form_row(formSortie.enregistrer) }}
+        {{ form_row(formSortie.annuler) }}
+        {{ form_row(formSortie.publier) }}
+    </div>
+    {{ form_end(formSortie) }}
+{% endblock %}
