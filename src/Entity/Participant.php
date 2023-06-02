@@ -6,10 +6,14 @@ use App\Repository\ParticipantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ParticipantRepository::class)]
+#[UniqueEntity(fields: ['mail'])]
+#[UniqueEntity(fields: ['pseudo'])]
 class Participant implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -18,6 +22,8 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message: "Veuillez entrer votre email")]
+    #[Assert\Length(max:180, maxMessage:"Votre email est trop long.")]
     private ?string $mail = null;
 
     #[ORM\Column]
@@ -27,18 +33,28 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank(message: "Veuillez entrer votre mot de passe")]
+    #[Assert\Length(max:180, maxMessage:"Votre mot de passe est trop long.")]
     private ?string $password = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message: "Veuillez entrer votre pseudo")]
+    #[Assert\Length(max:180, maxMessage:"Votre pseudo est trop long.")]
     private ?string $pseudo = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Veuillez entrer un nom")]
+    #[Assert\Length(max:180, maxMessage:"Votre nom est trop long.")]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Veuillez entrer un prenom")]
+    #[Assert\Length(max:180, maxMessage:"Votre prenom est trop long.")]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Veuillez entrer votre telephone")]
+    #[Assert\Length(max:180, maxMessage:"Votre telephone est trop long.")]
     private ?string $telephone = null;
 
     #[ORM\Column]

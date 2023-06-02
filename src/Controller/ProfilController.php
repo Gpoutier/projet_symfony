@@ -2,22 +2,55 @@
 
 namespace App\Controller;
 
-use App\Entity\Participant;
 use App\Form\ProfilFormType;
+use App\Repository\ParticipantRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+
 
 class ProfilController extends AbstractController
 {
-    #[Route('/profil', name: 'app_profil')]
-    public function index(): Response
+    #[Route('/profil/modifierProfil', name: 'modif_profil')]
+    public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $user = $this -> getUser();
-        $form = $this->createForm(ProfilFormType::class,  $user);
+        $participant = $this -> getUser();
+        $form = $this->createForm(ProfilFormType::class,  $participant);
 
-        return $this->render('profil/index.html.twig', [
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            //On récupère les données du formulaire
+            $participant = $form->getData();
+            //On hache le mdp
+            $hashedPassword = $this->passwordHasher->hashPassword($participant, $participant -> getPassword());
+            $participant->setPassword($hashedPassword);
+            //On sauvegarde en bdd
+            $entityManager->persist($participant);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Informations mises à jour');
+        }
+
+        return $this->render('profil/modifierProfil.html.twig', [
             'formProfil' => $form->createView(),
+        ]);
+    }
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
+
+    #[Route('/profil/ConsulterProfil/{pseudo}', name: 'consulter_profil')]
+    public function consulterProfil(String $pseudo, ParticipantRepository $participantRepository)
+    {
+        $participant = $participantRepository->findOneBy(['pseudo' => $pseudo]);
+
+        return $this->render('profil/consulterProfil.html.twig', [
+            'participant' => $participant,
         ]);
     }
 }

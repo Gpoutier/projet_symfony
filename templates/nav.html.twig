@@ -1,9 +1,24 @@
-<nav>
-        {% if app.user %}
-            <a href="{{ path('app_accueil') }}" title="Accueil">Accueil</a> </li>
-            <a href="{{ path('app_profil') }}" title="Mon profil">Mon profil</a> </li>
-            <a href="{{ path('app_logout') }}" title="Deconnexion">Se déconnecter</a> </li>
-        {% else %}
-            <a href="{{ path('app_login') }}" title="se connecte">Se connecte</a> </li>
-        {% endif %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{{ path('app_accueil') }}">
+        <img src="{{ asset('img/Sortir.png') }}" alt="Logo Sortir" class="logo small-logo">
+    </a>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+            {% if app.user %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ path('app_accueil') }}" title="Accueil">Accueil</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ path('modif_profil') }}" title="Mon profil">Mon profil</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ path('app_logout') }}" title="Deconnexion">Se déconnecter</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_login') }}" title="se connecte">Se connecte</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
 </nav>

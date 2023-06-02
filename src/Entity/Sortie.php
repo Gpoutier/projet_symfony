@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -17,25 +18,34 @@ class Sortie
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Veuillez entrer un nom pour votre sortie")]
+    #[Assert\Length(max: 255, maxMessage: "Votre nom est trop long.")]
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank(message : "Veuillez entrer une date pour votre sortie")]
+    #[Assert\Range (minMessage: "La date doit être ultérieur à la date d'aujourd'hui", min: "now")]
+    #[Assert\GreaterThanOrEqual (propertyPath: "dateLimiteInscription")]
     private ?\DateTimeInterface $dateHeureDebut = null;
 
     #[ORM\Column]
+    #[Assert\Range (notInRangeMessage: "Veuillez entrer une valeur valide", min: "1", max: "10000")]
     private ?int $duree = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateLimiteInscription = null;
 
     #[ORM\Column]
+    #[Assert\Range(notInRangeMessage: "Veuillez entrer un nombre de participants valide", min: "1")]
     private ?int $nbInscriptionMax = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length (max:255, maxMessage:"votre message est trop long")]
     private ?string $infosSortie = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\Choice (choices: ["En création","En cours","Ouvert","Fermé"])]
     private ?Etat $etat = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
@@ -112,14 +122,14 @@ class Sortie
         return $this;
     }
 
-    public function getNbInscriptionMax(): ?int
+    public function getNbInscriptionsMax(): ?int
     {
         return $this->nbInscriptionMax;
     }
 
-    public function setNbInscriptionMax(int $nbInscriptionMax): self
+    public function setNbInscriptionsMax(int $nbInscriptionsMax): self
     {
-        $this->nbInscriptionMax = $nbInscriptionMax;
+        $this->nbInscriptionMax = $nbInscriptionsMax;
 
         return $this;
     }

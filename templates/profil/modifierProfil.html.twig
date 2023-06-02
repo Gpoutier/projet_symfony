@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier profil{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <h1 class="text-center">Mon profil</h1>
+                {{ form_start(formProfil) }}
+                {{ form_row(formProfil.pseudo) }}
+                {{ form_row(formProfil.prenom) }}
+                {{ form_row(formProfil.nom) }}
+                {{ form_row(formProfil.telephone) }}
+                {{ form_row(formProfil.mail) }}
+                {{ form_row(formProfil.password) }}
+                {{ form_row(formProfil.campus) }}
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        {{ form_row(formProfil.enregistrer) }}
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex justify-content-end">
+                            {{ form_row(formProfil.annuler) }}
+                        </div>
+                    </div>
+                </div>
+                {{ form_end(formProfil) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
