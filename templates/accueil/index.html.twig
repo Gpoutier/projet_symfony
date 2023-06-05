@@ -27,7 +27,7 @@
                         <td>{{ sortie.dateLimiteInscription|date("m/d/Y") }}</td>
                         <td>{{ sortie.participants.count }}/{{ sortie.nbInscriptionsMax }}</td>
                         <td>{{ sortie.etat.libelle }}</td>
-                        <td>{% if is_granted('INSCRIRE_SORTIE', sortie) %}
+                        <td>{% if is_granted('DESINSCRIRE_SORTIE', sortie) %}
                             X
                             {% endif %}
                         </td>
@@ -35,12 +35,17 @@
                         <td>
                             {% if is_granted('MODIFIER_SORTIE', sortie) %}
                                 <a href="{{ path('modif_sortie', {'id': sortie.id}) }}">Modifier</a>
-                            {% elseif is_granted('INSCRIRE_SORTIE', sortie) %}
+                                {% if is_granted('ANNULER_SORTIE', sortie) %}
+                                    <a href="{{ path('annule_sortie', {'id': sortie.id}) }}">Annuler</a>
+                                {% endif %}
+                            {% elseif is_granted('DESINSCRIRE_SORTIE', sortie) %}
                                 <a href="{{ path('consulter_sortie', {'id': sortie.id}) }}">Afficher sortie</a>
                                 <a href="{{ path('desinscription_sortie', {'id': sortie.id}) }}">Se désinscrire</a>
-                            {% else %}
+                            {% elseif is_granted('INSCRIRE_SORTIE', sortie) %}
                                 <a href="{{ path('consulter_sortie', {'id': sortie.id}) }}">Afficher sortie</a>
                                 <a href="{{ path('inscription_sortie', {'id': sortie.id}) }}">S'inscrire</a>
+                            {% else %}
+                                <a href="{{ path('consulter_sortie', {'id': sortie.id}) }}">Afficher sortie</a>
                             {% endif %}
                         </td>
                     </tr>

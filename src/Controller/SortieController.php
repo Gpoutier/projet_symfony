@@ -8,6 +8,7 @@ use App\Form\SortieFormType;
 use App\Repository\EtatRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
+use App\Security\Voter\UserPermissionVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +21,9 @@ class SortieController extends AbstractController
     public function index(Request $request, EntityManagerInterface $entityManager, EtatRepository $etatRepository): Response
     {
         $participant = $this ->getUser();
+        if (!$participant) {
+            throw $this -> createNotFoundException("Vous devez être connecté");
+        }
         $sortie = new Sortie();
         $formSortie = $this->createForm(SortieFormType::class, $sortie);
 
@@ -60,6 +64,9 @@ class SortieController extends AbstractController
     {
         $participant = $this ->getUser();
         $sortie = $sortieRepository -> findOneBy(['id' => $id]);
+
+        $this->autorisation(UserPermissionVoter::MODIFIER_SORTIE, $sortie);
+
         $formSortie = $this->createForm(SortieFormType::class, $sortie);
 
         $formSortie->handleRequest($request);
@@ -96,6 +103,7 @@ class SortieController extends AbstractController
     public function inscriptionSortie(int $id, SortieRepository $sortieRepository, EntityManagerInterface $entityManager)
     {
         $sortie = $sortieRepository -> findOneBy(['id' => $id]);
+        $this->autorisation(UserPermissionVoter::INSCRIRE_SORTIE, $sortie);
         /** @var  Participant $participant */
         $participant = $this ->getUser();
         $sortie->addParticipant($participant);
@@ -112,6 +120,7 @@ class SortieController extends AbstractController
     public function desinscriptionSortie(int $id, SortieRepository $sortieRepository, EntityManagerInterface $entityManager)
     {
         $sortie = $sortieRepository -> findOneBy(['id' => $id]);
+        $this->autorisation(UserPermissionVoter::DESINSCRIRE_SORTIE, $sortie);
         /** @var  Participant $participant */
         $participant = $this ->getUser();
         $sortie->removeParticipant($participant);
@@ -124,18 +133,41 @@ class SortieController extends AbstractController
     }
 
     #[Route('/sortie/annule/{id}', name: 'annule_sortie')]
-    public function annuleSortie(int $id, SortieRepository $sortieRepository, EntityManagerInterface $entityManager)
+    public function annuleSortie(int $id, SortieRepository $sortieRepository, EntityManagerInterface $entityManager, Request $request, EtatRepository $etatRepository)
     {
         $sortie = $sortieRepository -> findOneBy(['id' => $id]);
-        /** @var  Participant $participant */
-        $participant = $this ->getUser();
-        $sortie->removeParticipant($participant);
-        $entityManager->persist($sortie);
-        $entityManager->flush();
+        $this->autorisation(UserPermissionVoter::ANNULER_SORTIE, $sortie);
+        $formSortie = $this->createForm(SortieFormType::class, $sortie);
 
-        $this->addFlash('success', "Vous vous êtes désinscrit !");
+        $formSortie->handleRequest($request);
+        if ($formSortie->isSubmitted() && $formSortie->isValid()) {
+            //On récupère les données du formulaire
+            $sortie = $formSortie->getData();
+            $etat = $etatRepository-> findOneBy(['libelle'=>'Annulée']);
+            $sortie ->setEtat($etat);
 
-        return $this->redirectToRoute('app_accueil');
+            $entityManager->persist($sortie);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'La sortie à bien été annulée');
+        }
+
+        return $this->render('sortie/annulerSortie.html.twig', [
+            'formSortie' => $formSortie->createView(),
+            'sortie' =>$sortie,
+        ]);
     }
+
+
+    public function autorisation(string $permission, ?Sortie $sortie)
+    {
+        if (!$sortie) {
+            throw $this -> createNotFoundException("Pas de sortie trouvée");
+        }
+        if (!$this->isGranted($permission, $sortie)) {
+            throw $this->createAccessDeniedException("Vous n'avez pas l'autorisation d'effectuer cette action");
+        }
+    }
+
 
 }
