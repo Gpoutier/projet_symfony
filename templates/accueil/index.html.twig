@@ -3,6 +3,12 @@
 {% block title %}Hello AccueilController!{% endblock %}
 
 {% block body %}
+    <div class="row">
+        <div class="col text-end" style="margin-right: 40px;">
+            <p><strong>Date du jour : {{ "now"|date("d-m-Y") }}</strong></p>
+            <p><strong>Participant : </strong> {{ app.user.pseudo }}</p>
+        </div>
+    </div>
     <div class="container" id="tableauSortie">
         <table class="table table-bordered table-dark" style="width: 120%;">
             <thead>
@@ -19,15 +25,22 @@
                         <td>{{ sortie.nom }}</td>
                         <td>{{ sortie.dateHeureDebut|date("m/d/Y h:m") }}</td>
                         <td>{{ sortie.dateLimiteInscription|date("m/d/Y") }}</td>
-                        <td>TODO:NBRE inscrit/{{ sortie.nbInscriptionsMax }}</td>
+                        <td>{{ sortie.participants.count }}/{{ sortie.nbInscriptionsMax }}</td>
                         <td>{{ sortie.etat.libelle }}</td>
-                        <td>TODO:inscrit</td>
+                        <td>{% if is_granted('INSCRIRE_SORTIE', sortie) %}
+                            X
+                            {% endif %}
+                        </td>
                         <td><a href="{{ path('consulter_profil', {'pseudo': sortie.organisateur.pseudo}) }}">{{ sortie.organisateur.pseudo }}</a></td>
                         <td>
-                            {% if app.user.pseudo == sortie.organisateur.pseudo %}
+                            {% if is_granted('MODIFIER_SORTIE', sortie) %}
                                 <a href="{{ path('modif_sortie', {'id': sortie.id}) }}">Modifier</a>
+                            {% elseif is_granted('INSCRIRE_SORTIE', sortie) %}
+                                <a href="{{ path('consulter_sortie', {'id': sortie.id}) }}">Afficher sortie</a>
+                                <a href="{{ path('desinscription_sortie', {'id': sortie.id}) }}">Se désinscrire</a>
                             {% else %}
                                 <a href="{{ path('consulter_sortie', {'id': sortie.id}) }}">Afficher sortie</a>
+                                <a href="{{ path('inscription_sortie', {'id': sortie.id}) }}">S'inscrire</a>
                             {% endif %}
                         </td>
                     </tr>

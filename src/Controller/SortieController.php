@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Form\SortieFormType;
 use App\Repository\EtatRepository;
+use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -48,8 +50,6 @@ class SortieController extends AbstractController
     public function consulterSortie(int $id, SortieRepository $sortieRepository)
     {
         $sortie = $sortieRepository -> findOneBy(['id' => $id]);
-
-
         return $this->render('sortie/consulterSortie.html.twig', [
             'sortie' => $sortie,
         ]);
@@ -66,6 +66,7 @@ class SortieController extends AbstractController
         if ($formSortie->isSubmitted() && $formSortie->isValid()) {
             //On récupère les données du formulaire
             $sortie = $formSortie->getData();
+
             if ($formSortie->get('enregistrer')->isClicked()) {
                 $etat = $etatRepository-> findOneBy(['libelle'=>'Créée']);
             }
@@ -89,6 +90,52 @@ class SortieController extends AbstractController
              'sortie' =>$sortie,
              'participant' => $participant,
         ]);
+    }
+
+    #[Route('/sortie/inscription/{id}', name: 'inscription_sortie')]
+    public function inscriptionSortie(int $id, SortieRepository $sortieRepository, EntityManagerInterface $entityManager)
+    {
+        $sortie = $sortieRepository -> findOneBy(['id' => $id]);
+        /** @var  Participant $participant */
+        $participant = $this ->getUser();
+        $sortie->addParticipant($participant);
+        $entityManager->persist($sortie);
+        $entityManager->flush();
+
+        $this->addFlash('success', "Vous êtes inscrit !");
+
+        return $this->redirectToRoute('consulter_sortie',
+            ["id" => $id]);
+    }
+
+    #[Route('/sortie/desinscription/{id}', name: 'desinscription_sortie')]
+    public function desinscriptionSortie(int $id, SortieRepository $sortieRepository, EntityManagerInterface $entityManager)
+    {
+        $sortie = $sortieRepository -> findOneBy(['id' => $id]);
+        /** @var  Participant $participant */
+        $participant = $this ->getUser();
+        $sortie->removeParticipant($participant);
+        $entityManager->persist($sortie);
+        $entityManager->flush();
+
+        $this->addFlash('success', "Vous vous êtes désinscrit !");
+
+        return $this->redirectToRoute('app_accueil');
+    }
+
+    #[Route('/sortie/annule/{id}', name: 'annule_sortie')]
+    public function annuleSortie(int $id, SortieRepository $sortieRepository, EntityManagerInterface $entityManager)
+    {
+        $sortie = $sortieRepository -> findOneBy(['id' => $id]);
+        /** @var  Participant $participant */
+        $participant = $this ->getUser();
+        $sortie->removeParticipant($participant);
+        $entityManager->persist($sortie);
+        $entityManager->flush();
+
+        $this->addFlash('success', "Vous vous êtes désinscrit !");
+
+        return $this->redirectToRoute('app_accueil');
     }
 
 }

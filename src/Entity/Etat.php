@@ -21,6 +21,11 @@ class Etat
     #[ORM\OneToMany(mappedBy: 'etat', targetEntity: Sortie::class)]
     private Collection $sorties;
 
+    public function __toString()
+    {
+        return $this->libelle;
+    }
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
