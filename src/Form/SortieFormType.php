@@ -57,7 +57,10 @@ class SortieFormType extends AbstractType
             ->add('lieu',EntityType::class,[
                 'label' => 'lieu : ',
                 'class' => Lieu::class,
-                'choice_label' => 'nom'
+                'choice_label' => 'nom',
+                'required' => true,
+                'placeholder' => 'Choisir un lieu',
+                'empty_data' => null,
             ])
             ->add('enregistrer',SubmitType::class,[
                 'label'=>'Enregistrer'

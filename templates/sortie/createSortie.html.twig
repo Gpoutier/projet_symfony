@@ -21,6 +21,9 @@
                 </div>
                 {{ form_row(formSortie.ville) }}
                 {{ form_row(formSortie.lieu) }}
+                <div class="form-group" id="inputLieu">
+
+                </div>
             </div>
         </div>
     </div>
@@ -30,4 +33,5 @@
         {{ form_row(formSortie.publier) }}
     </div>
     {{ form_end(formSortie) }}
+    <script src="{{ asset('js/apiLieux.js') }}"></script>
 {% endblock %}

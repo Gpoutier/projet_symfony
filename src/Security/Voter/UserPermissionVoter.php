@@ -27,6 +27,11 @@ class UserPermissionVoter extends Voter
         $user = $token->getUser();
         /** @var  Sortie $sortie */
         $sortie = $subject;
+        $dateActuelle = new \DateTime("now");
+        $dateDateLimiteInscriptionFormatee = $sortie->getDateLimiteInscription()->format('Y-m-d H:i:s');
+        $dateHeureDebutFormatee = $sortie->getDateHeureDebut()->format('Y-m-d H:i:s');
+
+
 
         // if the user is anonymous, do not grant access
         if (!$user instanceof UserInterface) {
@@ -44,12 +49,12 @@ class UserPermissionVoter extends Voter
                 }
                 break;
             case self::INSCRIRE_SORTIE:
-                if (!$sortie->getParticipants()->contains($user) && $sortie->getEtat()->getLibelle() == "Ouverte"){
+                if (!$sortie->getParticipants()->contains($user) && $sortie->getEtat()->getLibelle() == "Ouverte" && $dateDateLimiteInscriptionFormatee < $dateActuelle){
                     return true;
                 }
                 break;
             case self::DESINSCRIRE_SORTIE:
-                if ($sortie->getParticipants()->contains($user)){
+                if ($sortie->getParticipants()->contains($user) && $dateHeureDebutFormatee < $dateActuelle){
                     return true;
                 }
                 break;

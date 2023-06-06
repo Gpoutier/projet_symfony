@@ -4,9 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Form\AnnulationSortieFormType;
 use App\Form\SortieFormType;
 use App\Repository\EtatRepository;
-use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
 use App\Security\Voter\UserPermissionVoter;
 use Doctrine\ORM\EntityManagerInterface;
@@ -137,15 +137,15 @@ class SortieController extends AbstractController
     {
         $sortie = $sortieRepository -> findOneBy(['id' => $id]);
         $this->autorisation(UserPermissionVoter::ANNULER_SORTIE, $sortie);
-        $formSortie = $this->createForm(SortieFormType::class, $sortie);
+        $formAnnuleSortie = $this->createForm(AnnulationSortieFormType::class, $sortie);
 
-        $formSortie->handleRequest($request);
-        if ($formSortie->isSubmitted() && $formSortie->isValid()) {
+        $formAnnuleSortie->handleRequest($request);
+
+        if ($formAnnuleSortie->isSubmitted() && $formAnnuleSortie->isValid()) {
             //On récupère les données du formulaire
-            $sortie = $formSortie->getData();
+            $sortie = $formAnnuleSortie->getData();
             $etat = $etatRepository-> findOneBy(['libelle'=>'Annulée']);
             $sortie ->setEtat($etat);
-
             $entityManager->persist($sortie);
             $entityManager->flush();
 
@@ -153,7 +153,7 @@ class SortieController extends AbstractController
         }
 
         return $this->render('sortie/annulerSortie.html.twig', [
-            'formSortie' => $formSortie->createView(),
+            'formAnnuleSortie' => $formAnnuleSortie->createView(),
             'sortie' =>$sortie,
         ]);
     }
@@ -168,6 +168,5 @@ class SortieController extends AbstractController
             throw $this->createAccessDeniedException("Vous n'avez pas l'autorisation d'effectuer cette action");
         }
     }
-
 
 }
