@@ -42,6 +42,7 @@ class SortieController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'La sortie à bien été créée');
+            return $this->redirectToRoute('app_accueil');
         }
 
         return $this->render('sortie/createSortie.html.twig', [
@@ -53,6 +54,11 @@ class SortieController extends AbstractController
     #[Route('/sortie/ConsulterSortie/{id}', name: 'consulter_sortie')]
     public function consulterSortie(int $id, SortieRepository $sortieRepository)
     {
+        $participant = $this ->getUser();
+        if (!$participant) {
+            throw $this -> createNotFoundException("Vous devez être connecté");
+        }
+
         $sortie = $sortieRepository -> findOneBy(['id' => $id]);
         return $this->render('sortie/consulterSortie.html.twig', [
             'sortie' => $sortie,
@@ -89,6 +95,7 @@ class SortieController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'La sortie à bien été modifiée');
+            return $this->redirectToRoute('app_accueil');
         }
 
 

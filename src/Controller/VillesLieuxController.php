@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Lieu;
 use App\Repository\LieuRepository;
 use App\Repository\VilleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,19 +16,13 @@ class VillesLieuxController extends AbstractController
     public function traitementLieux(int $idVille, VilleRepository $villeRepository): Response
     {
         $ville =  $villeRepository -> findOneBy(['id' => $idVille]);
-        $lieux = $ville->getLieux();
-        $lieuxTableau  = [];
-        foreach ($lieux as $lieu) {
-            $lieuxTableau[] = [
-                'id' => $lieu->getId(),
-                'nom' => $lieu->getNom(),
-                'rue' => $lieu->getRue(),
-                'latitude' => $lieu->getLatitude(),
-                'longitude' => $lieu->getLongitude(),
-                'codePostal' => $lieu ->getVille() ->getCodePostal(),
-            ];
-        }
+        $lieux = ($ville == null) ? [] : $ville->getLieux() ->toArray();
 
-        return new JsonResponse($lieuxTableau);
+        $test = new Lieu();
+        $test -> setNom('Choisissez un lieu');
+
+        array_unshift($lieux, $test);
+
+        return $this -> json($lieux, Response::HTTP_OK, [], ['groups' => 'listeLieux']);
     }
 }

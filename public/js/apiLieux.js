@@ -4,33 +4,33 @@ const placement = document.getElementById('inputLieu');
 
 villeSelect.addEventListener('change', () => {
     const villeId = villeSelect.value;
-    console.log(villeSelect);
-    console.log(villeId);
     fetch(`/projet_symfony/public/lieux/${villeId}`)
         .then(response => response.json())
         .then(data => {
             console.log(data);
             lieuSelect.innerHTML = '';
+            inputLieu.innerHTML = "";
 
             data.forEach(lieu => {
                 const option = document.createElement('option');
                 option.value = lieu.id;
                 option.textContent = lieu.nom;
+                option.setAttribute('data-lieu', JSON.stringify(lieu));
                 lieuSelect.appendChild(option);
             });
-
-            lieuSelect.addEventListener('change', () => {
-                const selectedLieu = data.find(lieu => lieu.id.toString() === lieuSelect.value);
-                console.log(selectedLieu.rue);
-                inputLieu.innerHTML = "";
-                if (selectedLieu) {
-                    createInputLabel("Rue :");
-                    createInput(data, selectedLieu.rue);
-                    createInputLabel("Code postal :");
-                    createInput(data, selectedLieu.codePostal);
-                }
-            });
         });
+});
+
+lieuSelect.addEventListener('change', () => {
+    const selectedLieu = lieuSelect.options[lieuSelect.selectedIndex];
+    const dataLieu = JSON.parse(selectedLieu.dataset.lieu);
+    inputLieu.innerHTML = "";
+    if (selectedLieu) {
+        createInputLabel("Rue :");
+        createInput(dataLieu, dataLieu.rue);
+        createInputLabel("Code postal :");
+        createInput(dataLieu, dataLieu.ville.codePostal);
+    }
 });
 
 function createInputLabel(text) {

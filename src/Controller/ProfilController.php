@@ -18,6 +18,9 @@ class ProfilController extends AbstractController
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
         $participant = $this -> getUser();
+        if (!$participant) {
+            throw $this -> createNotFoundException("Vous devez être connecté");
+        }
         $form = $this->createForm(ProfilFormType::class,  $participant);
 
         $form->handleRequest($request);

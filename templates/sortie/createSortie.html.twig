@@ -20,7 +20,9 @@
                     <input type="text" id="campus" class="form-control" value="{{ participant.campus.nom }}" disabled>
                 </div>
                 {{ form_row(formSortie.ville) }}
-                {{ form_row(formSortie.lieu) }}
+                {% if formSortie.lieu is defined %}
+                    {{ form_row(formSortie.lieu) }}
+                {% endif %}
                 <div class="form-group" id="inputLieu">
 
                 </div>

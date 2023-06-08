@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Sortie;
+use App\modele\FiltreSortie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -37,6 +38,51 @@ class SortieRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function sortieFiltre(FiltreSortie $filtreSortie)
+    {
+        $queryBuilder = $this->createQueryBuilder('sortie');
+
+        if ($filtreSortie ->getNom())
+            $queryBuilder
+                ->andWhere('sortie.nom like :nom')
+                ->setParameter('nom', '%'.$filtreSortie ->getNom().'%');
+
+        if ($filtreSortie ->getCampus()) {
+            $queryBuilder -> andWhere('sortie.campus = :idCampus')
+                ->setParameter('idCampus', $filtreSortie->getCampus());
+        }
+        if ($filtreSortie ->getDatedebut()){
+            $queryBuilder ->andWhere('sortie.dateHeureDebut >= :datedebut')
+                ->setParameter('datedebut', $filtreSortie ->getDatedebut());
+        }
+        if ($filtreSortie ->getDatefin()){
+            $queryBuilder ->andWhere('sortie.dateHeureDebut <= :datefin')
+                ->setParameter('datefin', $filtreSortie ->getDatefin());
+        }
+        if ($filtreSortie ->getOrganisateur()){
+            $queryBuilder ->andWhere('sortie.organisateur = :organisateur')
+                ->setParameter('organisateur',$filtreSortie ->getIduser());
+
+        }
+        if ($filtreSortie ->getInscrit()){
+            $queryBuilder
+                ->InnerJoin('sortie.participants', 'p')
+                ->andWhere('p.id = :inscrit')
+                ->setParameter('inscrit', $filtreSortie ->getIduser());
+        }
+        if ($filtreSortie->getPasInscrit()) {
+            $queryBuilder
+                -> andWhere(':user NOT MEMBER OF sortie.participants')
+                -> setParameter('user', $filtreSortie ->getIduser());
+        }
+        if ($filtreSortie -> getSortieFermees()){
+            $queryBuilder ->andWhere('sortie.etat = 47');
+        }
+
+        $query = $queryBuilder->getQuery();
+        return $query->getResult();
     }
 
 //    /**

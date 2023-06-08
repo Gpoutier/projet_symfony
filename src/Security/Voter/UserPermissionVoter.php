@@ -31,8 +31,6 @@ class UserPermissionVoter extends Voter
         $dateDateLimiteInscriptionFormatee = $sortie->getDateLimiteInscription()->format('Y-m-d H:i:s');
         $dateHeureDebutFormatee = $sortie->getDateHeureDebut()->format('Y-m-d H:i:s');
 
-
-
         // if the user is anonymous, do not grant access
         if (!$user instanceof UserInterface) {
             return false;

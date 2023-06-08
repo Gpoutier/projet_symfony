@@ -3,10 +3,42 @@
 {% block title %}Hello AccueilController!{% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="col text-end" style="margin-right: 40px;">
-            <p><strong>Date du jour : {{ "now"|date("d-m-Y") }}</strong></p>
-            <p><strong>Participant : </strong> {{ app.user.pseudo }}</p>
+    <div class="container">
+            <div class="col text-end">
+                <h3><strong>Date du jour : {{ "now"|date("d-m-Y") }}</strong></h3>
+                <h3><strong>Participant : </strong> {{ app.user.pseudo }}</h3>
+            </div>
+    </div>
+    <div class="container" id="tableauSortie">
+        <h2>Filtrer les sorties</h2>
+        <div class="row">
+            <div class="col-md-3">
+                <div>
+                    {{ form_start(FiltresFormType) }}
+                    {{ form_row(FiltresFormType.campus) }}
+                    {{ form_row(FiltresFormType.nom) }}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div>
+                    {{ form_row(FiltresFormType.datedebut) }}
+                    {{ form_row(FiltresFormType.datefin) }}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div>
+                    {{ form_row(FiltresFormType.organisateur) }}
+                    {{ form_row(FiltresFormType.inscrit) }}
+                    {{ form_row(FiltresFormType.pasInscrit) }}
+                    {{ form_row(FiltresFormType.sortieFermees) }}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-right">
+                    {{ form_row(FiltresFormType.enregistrer) }}
+                    {{ form_end(FiltresFormType) }}
+                </div>
+            </div>
         </div>
     </div>
     <div class="container" id="tableauSortie">
@@ -54,5 +86,7 @@
         </table>
     </div>
     <br>
-    <a href="{{ path('create_sortie') }}" class="btn btn-primary">Créer une sortie</a>
+    <div class="container" id="tableauSortie">
+        <a href="{{ path('create_sortie') }}" class="btn btn-primary">Créer une sortie</a>
+    </div>
 {% endblock %}
