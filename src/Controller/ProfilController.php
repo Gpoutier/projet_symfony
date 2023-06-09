@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Form\ProfilFormType;
 use App\Repository\ParticipantRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -15,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProfilController extends AbstractController
 {
     #[Route('/profil/modifierProfil', name: 'modif_profil')]
-    public function index(Request $request, EntityManagerInterface $entityManager): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
         $participant = $this -> getUser();
         if (!$participant) {
@@ -27,6 +29,13 @@ class ProfilController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             //On récupère les données du formulaire
             $participant = $form->getData();
+
+            /** @var UploadedFile $photoFile */
+            $photoFile = $form->get('photo')->getData();
+            if ($photoFile) {
+                $photoFileName = $fileUploader->upload($photoFile);
+                $participant->setPhotoFilename($photoFileName);
+            }
             //On hache le mdp
             $hashedPassword = $this->passwordHasher->hashPassword($participant, $participant -> getPassword());
             $participant->setPassword($hashedPassword);
@@ -39,6 +48,7 @@ class ProfilController extends AbstractController
 
         return $this->render('profil/modifierProfil.html.twig', [
             'formProfil' => $form->createView(),
+            'participant' => $participant,
         ]);
     }
 

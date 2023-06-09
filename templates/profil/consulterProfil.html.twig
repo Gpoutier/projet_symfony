@@ -6,6 +6,7 @@
     <div class="container mt-4">
         <div class="row justify-content-center">
             <div class="col-lg-6">
+                <img src="{{ asset('img_profil/' ~ participant.photoFilename) }}"/>
                 <h1 class="text-center"><strong>{{ participant.pseudo }}</strong></h1>
                 <p><span class="participant-label">Prenom :</span>{{ participant.prenom }}</p>
                 <p><span class="participant-label">Nom :</span>{{ participant.nom }}</p>
